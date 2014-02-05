@@ -1,0 +1,9 @@
+TODO what about when the datestamp is the same but the size is different?
+TODO not sizing currectly when there are Chinese characters in file name.
+     (what about other composite characters, e.g. ᾆ?)
+Refactor:
+  + Everything... wrote this several years ago and it is VERY messy
+  + File should not have a fancy() method, so make dsTerm into dsFancyPrinter
+    (the Terminal module is sparse anyway, and no other part of the program
+    cares about the width of the terminal).
+
