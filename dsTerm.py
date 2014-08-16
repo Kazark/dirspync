@@ -9,7 +9,6 @@ __all__ = ['fill'] # TODO add
 ## Python
 import os
 import platform
-from abc import abstractmethod, ABCMeta
 from collections import namedtuple
 
 from dsStr import fill as __fill
@@ -17,14 +16,14 @@ from dsStr import ellipsize
 
 TermSize = namedtuple('TermSize', ('rows', 'cols'))
 
-class Term:
-    __metaclass__ = ABCMeta
+# TODO consolidate these classes
+# TODO make use of the fact that the real reason Windows is
+# TODO defaulted to 79 is because of os.linesep
+# TODO Note also that this does not cover use of ConEmu etc
+# TODO under Windows.
+# TODO make more use of dependency injection and less OO
 
-    @abstractmethod
-    def getSize(self) -> TermSize: pass
-
-class LinuxTerm(Term):
-    ## override
+class LinuxTerm:
     def __init__(self, sttySize):
         self._sttySize = sttySize
 
@@ -37,20 +36,17 @@ class LinuxTerm(Term):
         except:
             return TermSize(25, 80)
 
-class WinTerm(Term):
-    ## override
+class WinTerm:
     def getSize(self) -> TermSize:
-        # rows, columns
         return TermSize(25, 79)
 
-class DefaultTerm(Term):
-    ## override
+class DefaultTerm:
     def getSize(self) -> TermSize:
         return TermSize(25, 80)
 
 sttySize = lambda: os.popen('stty size', 'r').read().split()
 
-def getSystemTerm() -> Term:
+def getSystemTerm():
     system = platform.system()
     if system == 'Linux':
         term = LinuxTerm(sttySize)
