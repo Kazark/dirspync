@@ -18,6 +18,16 @@ class string_subtration_specs(unittest.TestCase):
     def test_subtract_baz_from_foobar_should_raise_exception(self):
         self.assertRaises(ValueError, lambda: minusstr('foobar', 'baz'))
 
+class fill_string_with_character_to_length_specs(unittest.TestCase):
+    def test_fill_empty_string_with_with_empty_string_to_zero_should_return_empty(self):
+        self.assertEqual('', fill('', '', 0))
+
+    def test_fill_empty_string_with_with_empty_string_to_positive_should_return_spaces(self):
+        self.assertEqual('    ', fill('', '', 4))
+
+    def test_fill_empty_string_with_with_z_to_three_should_return_zzz(self):
+        self.assertEqual('zzz', fill('', 'z', 3))
+
 class ellipsizing_specs(unittest.TestCase):
     def test_ellipsize_empty_string_to_zero_length_should_return_empty_string(self):
         self.assertEqual('', ellipsize('', 0))
