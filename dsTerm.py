@@ -25,6 +25,9 @@ class Term:
 
 class LinuxTerm(Term):
     ## override
+    def __init__(self, sttySize):
+        self._sttySize = sttySize
+
     def getSize(self) -> TermSize:
         return self._getSize(self._sttySize())
 
@@ -33,9 +36,6 @@ class LinuxTerm(Term):
             return TermSize(int(sttySize[0]), int(sttySize[1]))
         except:
             return TermSize(25, 80)
-
-    def _sttySize(self) -> list:
-        return os.popen('stty size', 'r').read().split()
 
 class WinTerm(Term):
     ## override
@@ -48,10 +48,12 @@ class DefaultTerm(Term):
     def getSize(self) -> TermSize:
         return TermSize(25, 80)
 
+sttySize = lambda: os.popen('stty size', 'r').read().split()
+
 def getSystemTerm() -> Term:
     system = platform.system()
     if system == 'Linux':
-        term = LinuxTerm()
+        term = LinuxTerm(sttySize)
     elif system == 'Windows':
         term = WinTerm()
     else:

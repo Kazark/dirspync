@@ -1,3 +1,8 @@
+# Vim
+Session.vim
+*.swp
+*.swo
+
 *.py[cod]
 
 # C extensions
