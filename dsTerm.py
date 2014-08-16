@@ -15,10 +15,6 @@ from collections import namedtuple
 from dsStr import fill as __fill
 from dsStr import ellipsize
 
-#class TermSize:
-#    def __init__(self, rows, cols):
-#        self.__rows = rows
-#        self.__cols = cols
 TermSize = namedtuple('TermSize', ('rows', 'cols'))
 
 class Term:
