@@ -2,9 +2,6 @@
 '''
 Author: Kazark
 Created: Aug 27 09
-Modified: Oct 8 11
-Version: 1.8.1
-Console interface to the DirSpync library.
 '''
 
 from dsCmp import *
@@ -61,23 +58,23 @@ class ioDirCmp:
         if dct[LO] or dct[LN] or dct[SA] or dct[SZ] or dct[RO] or dct[RN] or dct[DT]:
             print(fill('.%s ' % self.dircmp.union, self.sep1))
             if dct[LO]:
-                self.lo(dct, mode)
+                self.left_only(dct, mode)
             if dct[LN]:
-                self.ln(dct, mode)
+                self.left_newer(dct, mode)
             if dct[SA]:
-                self.sa(dct, mode)
+                self.same(dct, mode)
             if dct[DT]:
-                self.dt(dct, mode)
+                self.probably_same(dct, mode)
             if dct[SZ]:
-                self.sz(dct, mode)
+                self.equal_dates_unequal_sizes(dct, mode)
             if dct[RN]:
-                self.rn(dct, mode)
+                self.right_newer(dct, mode)
             if dct[RO]:
-                self.ro(dct, mode)
+                self.right_only(dct, mode)
         for c in dct.children:
             ioDirCmp(c).iocmp()
 
-    def ln(self, dct, mode):
+    def left_newer(self, dct, mode):
         print(fill('%s... newer: ' % self.dircmp.ldiff, self.sep2))
         for lf, rf in dct[LN]:
             print(fancy(lf, '> '))
@@ -91,19 +88,19 @@ class ioDirCmp:
                 for lf, rf in dct[LN]:
                     self.sync.copystat(lf, rf)
 
-    def sa(self, dct, mode):
+    def same(self, dct, mode):
         print(fill('Equal datestamps, equal size: ', self.sep2))
         for lf, rf in dct[SA]:
             print(fancy(lf))
             print(fancy(rf))
 
-    def dt(self, dct, mode):
+    def probably_same(self, dct, mode):
         print(fill('Probably equivalent datestamps (?), equal size: ', self.sep2))
         for lf, rf in dct[DT]:
             print(fancy(lf))
             print(fancy(rf))
 
-    def sz(self, dct, mode): 
+    def equal_dates_unequal_sizes(self, dct, mode): 
         print(fill('Equal datestamps, unequal sizes: ', self.sep2))
         for lf, rf in dct[SZ]:
             print(fancy(lf))
@@ -111,7 +108,7 @@ class ioDirCmp:
             print(fancy(rf))
             print('%s size in byes: %d' % (self.dircmp.rdiff, rf.size()))
 
-    def rn(self, dct, mode):
+    def right_newer(self, dct, mode):
         print(fill('%s... newer: ' % self.dircmp.rdiff, self.sep2))
         for lf, rf in dct[RN]:
             print(fancy(lf, '  '))
@@ -125,7 +122,7 @@ class ioDirCmp:
                 for lf, rf in dct[RN]:
                     self.sync.copystat(rf, lf)
 
-    def ro(self, dct, mode):
+    def right_only(self, dct, mode):
         print(fill('%s... only: ' % self.dircmp.rdiff, self.sep2))
         for f in dct[RO]:
             print(fancy(f))
@@ -145,7 +142,7 @@ class ioDirCmp:
                     elif cmd == DEL:
                         self.sync.delete(f.path())
 
-    def lo(self, dct, mode):
+    def left_only(self, dct, mode):
         print(fill('%s... only: ' % self.dircmp.ldiff, self.sep2))
         for f in dct[LO]:
             print(fancy(f))
