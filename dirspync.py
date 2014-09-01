@@ -64,6 +64,7 @@ class InteractiveDirectoryComparer:
         mode = self.dircmp.mode
         if mode > INCLUDE_ALL + INTERACT:
             raise ValueError("invalid mode argument")
+        print('Comparing ' + self.dircmp.union + '...') 
         dct = self.dircmp.compare()
         if dct[LO] or dct[LN] or dct[SA] or dct[SZ] or dct[RO] or dct[RN] or dct[DT]:
             print(fill('.%s ' % self.dircmp.union, self.sep1))
