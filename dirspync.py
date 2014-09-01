@@ -18,7 +18,7 @@ DEL = 3
 EACH = 4
 EXIT = -1
 
-class ioDirCmp:
+class InteractiveDirectoryComparer:
     def __init__(self, dircmp):
         self.dircmp = dircmp
         self.sync = SyncOps(print, self.ask, print)
@@ -49,9 +49,8 @@ class ioDirCmp:
         else:
             return NO
         
-    def iocmp(self):
-        ## TODO this funtion needs serious help
-        mode = self.dircmp.mode ## yuck hack
+    def interactivelyCompare(self):
+        mode = self.dircmp.mode
         if mode > INCLUDE_ALL + INTERACT:
             raise ValueError("invalid mode argument")
         dct = self.dircmp.compare()
@@ -72,7 +71,7 @@ class ioDirCmp:
             if dct[RO]:
                 self.right_only(dct, mode)
         for c in dct.children:
-            ioDirCmp(c).iocmp()
+            InteractiveDirectoryComparer(c).interactivelyCompare()
 
     def left_newer(self, dct, mode):
         print(fill('%s... newer: ' % self.dircmp.ldiff, self.sep2))
@@ -165,21 +164,12 @@ class ioDirCmp:
 def main():
     import sys
     import os
-    mode = sys.argv[1]
-    if mode == 'all':
-        mode = INCLUDE_ALL
-    elif mode == 'diff':
-        mode = INCLUDE_DIFF
-    elif mode == 'interact':
-        mode = DIFF_INTERACT
-    else:
-        mode = int(mode)
     try:
-        l, r = [Dir(os.path.abspath(d), '') for d in sys.argv[2:]]
+        left, right = [Dir(os.path.abspath(d), '') for d in sys.argv[1:]]
     except ValueError:
         raise ValueError("invalid arguments")
-    dcmp = ioDirCmp(DirCmp(mode, l, r))
-    dcmp.iocmp()
+    dcmp = InteractiveDirectoryComparer(DirCmp(DIFF_INTERACT, left, right))
+    dcmp.interactivelyCompare()
 
 if __name__ == '__main__':
     main()
