@@ -160,7 +160,7 @@ class FileComparer:
         self.dterr = dterr
 
     def compare(self, lf, rf):
-        return self.__compare(lf.mtime(), rf.mtime(), lf.size(), rf.size(), lf.md5sum(), rf.md5sum())
+        return self.__compare(lf.mtime(), rf.mtime(), lf.size(), rf.size(), lf.md5sum, rf.md5sum)
 
     def __compare(self, lt, rt, ls, rs, lhash, rhash):
         absdiff = abs(lt-rt)
@@ -171,7 +171,7 @@ class FileComparer:
         elif lt==rt and ls != rs: # Same timestamp, different size
             # requires special user attention
             return SZ
-        elif lhash == rhash:
+        elif lhash() == rhash():
             return SA # TODO these two-letters constants are awful...
         elif lt > rt: # LEFT NEWER
             return LN
