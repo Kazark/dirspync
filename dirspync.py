@@ -17,16 +17,18 @@ CPSTAT = 2
 DEL = 3
 EACH = 4
 EXIT = -1
+HELP = -2
 
 class InteractiveDirectoryComparer:
     def __init__(self, dircmp):
         self.dircmp = dircmp
         self.sync = SyncOps(print, self.ask, print)
-        self.cmds = {YES: ['y'],
+        self.cmds = {YES: ['y', 'Y'],
                      CPSTAT: ['cpstat', 'copystat'],
                      DEL: ['del', 'rm'],
                      EACH: ['askeach'],
-                     EXIT: ['exit', 'q']}
+                     EXIT: ['exit', 'q'],
+                     HELP: ['?', 'help']}
         self.sep1 = '='
         self.sep2 = '-'
         
@@ -46,6 +48,15 @@ class InteractiveDirectoryComparer:
             return EACH
         elif s in self.cmds[EXIT]:
             raise SystemExit
+        elif s in self.cmds[HELP]:
+            print('y, Y - yes')
+            print("cpstat, copystat - copy the file's stats but not its contents")
+            print('del, rm - permanently delete the file')
+            print('askeach - ask again for each file listed individually')
+            print('exit, q - exit the program')
+            print('?, help - print this message')
+            print('<anything else> - no')
+            return self.askcp(frum, tu, prompt)
         else:
             return NO
         
