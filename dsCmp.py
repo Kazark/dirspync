@@ -18,6 +18,7 @@ INCLUDE_DIFF = INCLUDE_ALL - SA - DT
 import os
 import time
 import math # the logarithmic function used in file size string formatting
+import hashlib
 
 from dsStr import minusstr, ellipsize
 DIRSEP = os.path.sep
@@ -38,6 +39,14 @@ class File:
         
     def size(self):
         return fSize(os.stat(self.path()).st_size)
+
+    # Thanks to Nathan Feger http://stackoverflow.com/a/11143944/834176
+    def md5sum(self):
+        md5 = hashlib.md5()
+        with open(self.path(), 'rb') as f:
+            for chunk in iter(lambda: f.read(128 * md5.block_size), b''):
+                md5.update(chunk)
+        return md5.hexdigest()
         
 class Dir(dict, File):
     def __init__(self, name, prefix):
@@ -151,14 +160,9 @@ class FileComparer:
         self.dterr = dterr
 
     def compare(self, lf, rf):
-        return self.__compare(lf.mtime(), rf.mtime(), lf.size(), rf.size())
+        return self.__compare(lf.mtime(), rf.mtime(), lf.size(), rf.size(), lf.md5sum(), rf.md5sum())
 
-    def __compare(self, lt, rt, ls, rs):
-        # TODO: Some of the handling here is less-than-rigorous.
-        #       May want to fix that. The chances that something
-        #       will go wrong are small, but at some point an
-        #       option to do things more or less rigorously should
-        #       be implemented.
+    def __compare(self, lt, rt, ls, rs, lhash, rhash):
         absdiff = abs(lt-rt)
         if (absdiff<=self.dterr) and ls == rs:
             return SA
@@ -167,6 +171,8 @@ class FileComparer:
         elif lt==rt and ls != rs: # Same timestamp, different size
             # requires special user attention
             return SZ
+        elif lhash == rhash:
+            return SA # TODO these two-letters constants are awful...
         elif lt > rt: # LEFT NEWER
             return LN
         elif lt < rt: # RIGHT NEWER
@@ -242,4 +248,3 @@ class diffNode(dict):
             return list()
         else:
             return dict.__getitem__(self, k)
-    
